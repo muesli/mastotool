@@ -5,15 +5,12 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io"
 	"math"
 	"os"
-	"syscall"
 	"time"
 
 	mastodon "github.com/mattn/go-mastodon"
 	"github.com/muesli/goprogressbar"
-	"golang.org/x/crypto/ssh/terminal"
 )
 
 var (
@@ -27,50 +24,34 @@ var (
 	// user     = flag.String("user", "@fribbledom@mastodon.social", "shows stats for this user")
 )
 
-func readPassword(prompt string) (string, error) {
-	var tty io.WriteCloser
-	tty, err := os.OpenFile("/dev/tty", os.O_WRONLY, 0)
-	if err != nil {
-		tty = os.Stdout
-	} else {
-		defer tty.Close()
-	}
-
-	fmt.Fprint(tty, prompt+" ")
-	buf, err := terminal.ReadPassword(int(syscall.Stdin))
-	fmt.Fprintln(tty)
-
-	return string(buf), err
-}
-
-func registerApp(config *Config) error {
+func registerApp(config *Config) (string, error) {
 	app, err := mastodon.RegisterApp(context.Background(), &mastodon.AppConfig{
 		Server:     config.Value("instance").(string),
 		ClientName: "statootstics",
-		Scopes:     "read write follow",
+		Scopes:     "read",
 		Website:    "",
 	})
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	config.Set("id", app.ClientID)
 	config.Set("secret", app.ClientSecret)
-	return nil
+	config.Set("redirectURI", app.RedirectURI)
+
+	return app.AuthURI, nil
 }
 
 func initClient() {
 	var err error
-	var instance, username, password, id, secret string
+	var instance, token, redirectURI, authURI, id, secret string
 	config, err := LoadConfig(*configFile)
 	if err == nil {
 		instance = config.Value("instance").(string)
-		username = config.Value("username").(string)
-		secret = config.Value("secret").(string)
 		id = config.Value("id").(string)
-		if config.Value("password") != nil {
-			password = config.Value("password").(string)
-		}
+		secret = config.Value("secret").(string)
+		token = config.Value("token").(string)
+		redirectURI = config.Value("redirectURI").(string)
 	}
 
 	scanner := bufio.NewScanner(os.Stdin)
@@ -81,46 +62,43 @@ func initClient() {
 			panic(err)
 		}
 		instance = scanner.Text()
+		config.Set("instance", instance)
 	}
-
-	if len(username) == 0 {
-		fmt.Print("Username (email): ")
-		scanner.Scan()
-		if scanner.Err() != nil {
-			panic(err)
-		}
-		username = scanner.Text()
-	}
-
-	config.Set("instance", instance)
-	config.Set("username", username)
 
 	if len(id) == 0 {
-		err = registerApp(&config)
+		authURI, err = registerApp(&config)
 		if err != nil {
 			panic(err)
 		}
 
 		id = config.Value("id").(string)
 		secret = config.Value("secret").(string)
-	}
-	config.Save(*configFile)
-
-	if len(password) == 0 {
-		password, err = readPassword("Password:")
-		if err != nil {
-			panic(err)
-		}
+		redirectURI = config.Value("redirectURI").(string)
 	}
 
-	client = mastodon.NewClient(&mastodon.Config{
+	mConfig := &mastodon.Config{
+		AccessToken:  token,
 		Server:       instance,
 		ClientID:     id,
 		ClientSecret: secret,
-	})
-	err = client.Authenticate(context.Background(), username, password)
-	if err != nil {
-		panic(err)
+	}
+	client = mastodon.NewClient(mConfig)
+
+	if len(mConfig.AccessToken) == 0 {
+		fmt.Printf("Please visit %s and enter the generated token: ", authURI)
+		scanner.Scan()
+		if scanner.Err() != nil {
+			panic(err)
+		}
+		code := scanner.Text()
+
+		err = client.AuthenticateToken(context.Background(), code, redirectURI)
+		if err != nil {
+			panic(err)
+		}
+
+		config.Set("token", mConfig.AccessToken)
+		config.Save(*configFile)
 	}
 }
 
