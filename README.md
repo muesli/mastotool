@@ -72,6 +72,6 @@ Some tag                                                                        
 
 ## Development
 
-[![GoDoc](https://godoc.org/github.com/golang/gddo?status.svg)](https://godoc.org/github.com/mueslistatootstics)
+[![GoDoc](https://godoc.org/github.com/golang/gddo?status.svg)](https://godoc.org/github.com/muesli/statootstics)
 [![Build Status](https://travis-ci.org/muesli/statootstics.svg?branch=master)](https://travis-ci.org/muesli/statootstics)
 [![Go ReportCard](http://goreportcard.com/badge/muesli/statootstics)](http://goreportcard.com/report/muesli/statootstics)
