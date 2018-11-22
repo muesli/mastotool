@@ -1,0 +1,2 @@
+# statootstics
+Mastodon Statistics Generator
