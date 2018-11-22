@@ -44,6 +44,7 @@ New followers per day: 7.41
 New followings per day: 3.67
 Likes per toot: 9.00 (total likes: 900)
 Boosts per toot: 2.50 (total boosts: 250)
+Replies per toot: 3.40 (total replies: 340)
 
 Users you mentioned most                                              Interactions
 ----------------------------------------------------------------------------------
@@ -54,6 +55,11 @@ Users you boosted most                                                Interactio
 ----------------------------------------------------------------------------------
 xyz                                                                              7
 zyx                                                                              2
+
+Users that responded most                                             Interactions
+----------------------------------------------------------------------------------
+def                                                                             11
+fed                                                                              9
 
 Most replied-to toots                                                      Replies
 ----------------------------------------------------------------------------------
