@@ -47,35 +47,43 @@ Boosts per toot: 2.50 (total boosts: 250)
 
 Users you mentioned most                                              Interactions
 ----------------------------------------------------------------------------------
-abc                                                                              3
+abc                                                                              9
+def                                                                              3
 
 Users you boosted most                                                Interactions
 ----------------------------------------------------------------------------------
 xyz                                                                              7
+zyx                                                                              2
 
 Most replied-to toots                                                      Replies
 ----------------------------------------------------------------------------------
 Some toot                                                                       20
+Another toot                                                                     7
 
 Most liked toots                                                             Likes
 ----------------------------------------------------------------------------------
 Some toot                                                                       50
+Another toot                                                                     8
 
 Most boosted toots                                                          Boosts
 ----------------------------------------------------------------------------------
 Some toot                                                                       10
+Another toot                                                                     4
 
 Highest scoring toots                                                        Score
 ----------------------------------------------------------------------------------
 Some toot                                                                       80
+Another toot                                                                    20
 
 Tags used that got the most likes                                            Likes
 ----------------------------------------------------------------------------------
 Some tag                                                                        10
+Another tag                                                                      4
 
 Tags used that got the most boosts                                          Boosts
 ----------------------------------------------------------------------------------
 Some tag                                                                         5
+Another tag                                                                      1
 ```
 
 ## Development
