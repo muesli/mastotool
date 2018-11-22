@@ -5,7 +5,7 @@ Mastodon Statistics Generator
 
 ## Installation
 
-Make sure you have a working Go environment (Go 1.7 or higher is required).
+Make sure you have a working Go environment (Go 1.8 or higher is required).
 See the [install instructions](http://golang.org/doc/install.html).
 
 To install statootstics, simply run:
