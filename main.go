@@ -18,6 +18,7 @@ import (
 
 var (
 	client *mastodon.Client
+	self   *mastodon.Account
 
 	topN       = flag.Int("top", 10, "shows the top N items in each category")
 	maxToots   = flag.Int("recent", 0, "only account for the N most recent toots (excl replies & boosts)")
@@ -125,9 +126,10 @@ func initClient() {
 
 func main() {
 	flag.Parse()
-
 	initClient()
-	self, err := client.GetAccountCurrentUser(context.Background())
+
+	var err error
+	self, err = client.GetAccountCurrentUser(context.Background())
 	if err != nil {
 		panic(err)
 	}
@@ -136,7 +138,7 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-		self := accounts[0]
+		self = accounts[0]
 	*/
 
 	stats := &stats{
@@ -148,6 +150,7 @@ func main() {
 		Replies:    make(map[string]*tootStat),
 		Mentions:   make(map[string]int64),
 		Boosts:     make(map[string]int64),
+		Responses:  make(map[string]int64),
 	}
 	pb := &goprogressbar.ProgressBar{
 		Text:  fmt.Sprintf("Loading toots for %s", self.Username),

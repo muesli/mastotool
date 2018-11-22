@@ -39,6 +39,7 @@ type stats struct {
 	Replies    map[string]*tootStat
 	Mentions   map[string]int64
 	Boosts     map[string]int64
+	Responses  map[string]int64
 }
 
 func parseToot(status *mastodon.Status, stats *stats) error {
@@ -61,7 +62,15 @@ func parseToot(status *mastodon.Status, stats *stats) error {
 		if err != nil {
 			panic(err)
 		}
-		replies = int64(len(contexts.Descendants))
+
+		// handle replies for this status
+		for _, d := range contexts.Descendants {
+			if d.Account.ID == self.ID {
+				continue
+			}
+			replies++
+			stats.Responses[d.Account.Acct]++
+		}
 
 		for _, t := range status.Tags {
 			tag := strings.ToLower(t.Name)
@@ -203,10 +212,11 @@ func printTootTable(cols []string, emptyText string, toots []string, tootStats [
 }
 
 func printAccountStats(stats *stats) {
-	var likes, boosts int64
+	var likes, boosts, replies int64
 	for _, t := range stats.Toots {
 		likes += t.Likes
 		boosts += t.Boosts
+		replies += t.Replies
 	}
 
 	fmt.Printf("Total toots: %d (excluding replies & boosts)\n", len(stats.Toots))
@@ -225,6 +235,9 @@ func printAccountStats(stats *stats) {
 	fmt.Printf("Boosts per toot: %.2f (total boosts: %d)\n",
 		float64(boosts)/float64(len(stats.Toots)),
 		boosts)
+	fmt.Printf("Replies per toot: %.2f (total replies: %d)\n",
+		float64(replies)/float64(len(stats.Toots)),
+		replies)
 	fmt.Println()
 }
 
@@ -242,6 +255,14 @@ func printInteractionStats(stats *stats) {
 		ss = append(ss, kv{k, v})
 	}
 	printTable([]string{"Users you boosted most", "Interactions"},
+		"No interactions found.",
+		ss)
+
+	ss = []kv{}
+	for k, v := range stats.Responses {
+		ss = append(ss, kv{k, v})
+	}
+	printTable([]string{"Users that responded most", "Interactions"},
 		"No interactions found.",
 		ss)
 }
