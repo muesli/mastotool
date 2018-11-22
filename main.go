@@ -170,6 +170,13 @@ func main() {
 			panic(err)
 		}
 
+		// For some reason, either because it's Pleroma or because I have too few toots,
+		// `pg.MaxID` never equals `""` and we get stuck looping forever.  Add a simple
+		// break condition on "no statuses fetched" to avoid the issue.
+		if len(statuses) == 0 {
+			break
+		}
+
 		for _, s := range statuses {
 			err = parseToot(s, stats)
 			if err != nil {
