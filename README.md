@@ -25,7 +25,11 @@ Usage of ./statootstics:
         only account for the N most recent toots (excl replies & boosts)
   -top int
         shows the top N items in each category (default 10)
+```
 
+## Example
+
+```
 $ statootstics
 Which instance to connect to: https://mastodon.social
 Username (email): some_user@domain.tld
