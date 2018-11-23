@@ -148,13 +148,7 @@ func main() {
 			panic(err)
 		}
 
-		// For some reason, either because it's Pleroma or because I have too few toots,
-		// `pg.MaxID` never equals `""` and we get stuck looping forever.  Add a simple
-		// break condition on "no statuses fetched" to avoid the issue.
-		if len(statuses) == 0 {
-			break
-		}
-
+		abort := false
 		for _, s := range statuses {
 			err = parseToot(s, stats)
 			if err != nil {
@@ -165,14 +159,15 @@ func main() {
 			pb.LazyPrint()
 
 			if *maxToots > 0 && len(stats.Toots) >= *maxToots {
+				abort = true
 				break
 			}
 		}
 
-		if *maxToots > 0 && len(stats.Toots) >= *maxToots {
-			break
-		}
-		if pg.MaxID == "" {
+		// For some reason, either because it's Pleroma or because I have too few toots,
+		// `pg.MaxID` never equals `""` and we get stuck looping forever. Add a simple
+		// break condition on "no statuses fetched" to avoid the issue.
+		if abort || pg.MaxID == "" || len(statuses) == 0 {
 			break
 		}
 		time.Sleep(1000 * time.Millisecond)
