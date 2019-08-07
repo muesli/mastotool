@@ -12,6 +12,10 @@ go:
   - 1.12.x
   - tip
 
+matrix:
+  allow_failures:
+    - go: tip
+
 notifications:
   email:
     on_success: change
