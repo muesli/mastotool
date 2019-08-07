@@ -16,6 +16,10 @@ matrix:
   allow_failures:
     - go: tip
 
+env:
+  global:
+    GO111MODULE=on
+
 notifications:
   email:
     on_success: change
