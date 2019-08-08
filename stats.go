@@ -71,7 +71,7 @@ func parseToot(status *mastodon.Status, stats *stats) error {
 	if status.InReplyToID == nil {
 		contexts, err := client.GetStatusContext(context.Background(), status.ID)
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		// handle replies for this status
