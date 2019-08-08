@@ -42,6 +42,17 @@ type stats struct {
 	Responses  map[string]int64
 }
 
+func cleanupContent(content string) string {
+	// clean up toot for terminal output
+	content = strings.Replace(content, "<br>", "\n", -1)
+	content = strings.Replace(content, "<p>", "\n", -1)
+	content = strings.Replace(content, "</p>", "", -1)
+	content = html.UnescapeString(stripper.Sanitize(content))
+	content = strings.TrimSpace(strings.Replace(content, "\n", " ", -1))
+
+	return content
+}
+
 func parseToot(status *mastodon.Status, stats *stats) error {
 	// handle mentions
 	for _, m := range status.Mentions {
@@ -92,12 +103,7 @@ func parseToot(status *mastodon.Status, stats *stats) error {
 		}
 	}
 
-	// clean up toot for terminal output
-	content := strings.Replace(status.Content, "<br>", "\n", -1)
-	content = strings.Replace(content, "<p>", "\n", -1)
-	content = strings.Replace(content, "</p>", "", -1)
-	content = html.UnescapeString(stripper.Sanitize(content))
-	content = strings.TrimSpace(strings.Replace(content, "\n", " ", -1))
+	content := cleanupContent(status.Content)
 
 	// handle replies
 	if status.InReplyToID != nil {
