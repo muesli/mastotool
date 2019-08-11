@@ -16,3 +16,6 @@
 
 # Binary
 mastotool
+
+# Release
+dist/
