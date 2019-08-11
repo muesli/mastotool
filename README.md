@@ -23,8 +23,7 @@ Compiling mastotool is easy, simply run:
 ## Usage
 
 ```
-Usage:
-  mastotool [command]
+mastotool [command]
 
 Available Commands:
   help        Help about any command
@@ -41,8 +40,7 @@ Use "mastotool [command] --help" for more information about a command.
 ### Generate Statistics
 
 ```
-Usage:
-  mastotool stats [flags]
+mastotool stats [flags]
 
 Flags:
       --columns int   displays tables with N columns (default 80)
@@ -53,8 +51,7 @@ Flags:
 ### Search
 
 ```
-Usage:
-  mastotool search <string>
+mastotool search <string>
 ```
 
 ## Example
