@@ -1,4 +1,4 @@
-module github.com/muesli/statootstics
+module github.com/muesli/mastotool
 
 require (
 	github.com/gorilla/websocket v1.4.0 // indirect

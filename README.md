@@ -1,5 +1,5 @@
-statootstics
-============
+mastotool
+=========
 
 Mastodon Statistics Generator
 
@@ -8,15 +8,15 @@ Mastodon Statistics Generator
 Make sure you have a working Go environment (Go 1.8 or higher is required).
 See the [install instructions](http://golang.org/doc/install.html).
 
-To install statootstics, simply run:
+To install mastotool, simply run:
 
-    go get github.com/muesli/statootstics
+    go get github.com/muesli/mastotool
 
 ## Usage
 
 ```
-$ statootstics -help
-Usage of ./statootstics:
+$ mastotool -help
+Usage of ./mastotool:
   -columns int
         displays tables with N columns (default 80)
   -config string
@@ -30,7 +30,7 @@ Usage of ./statootstics:
 ## Example
 
 ```
-$ statootstics
+$ mastotool
 Which instance to connect to: https://mastodon.social
 Username (email): some_user@domain.tld
 Password: ********
@@ -94,6 +94,6 @@ Another tag                                                                     
 
 ## Development
 
-[![GoDoc](https://godoc.org/github.com/golang/gddo?status.svg)](https://godoc.org/github.com/muesli/statootstics)
-[![Build Status](https://travis-ci.org/muesli/statootstics.svg?branch=master)](https://travis-ci.org/muesli/statootstics)
-[![Go ReportCard](http://goreportcard.com/badge/muesli/statootstics)](http://goreportcard.com/report/muesli/statootstics)
+[![GoDoc](https://godoc.org/github.com/golang/gddo?status.svg)](https://godoc.org/github.com/muesli/mastotool)
+[![Build Status](https://travis-ci.org/muesli/mastotool.svg?branch=master)](https://travis-ci.org/muesli/mastotool)
+[![Go ReportCard](http://goreportcard.com/badge/muesli/mastotool)](http://goreportcard.com/report/muesli/mastotool)

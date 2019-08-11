@@ -29,7 +29,7 @@ var (
 func registerApp(config *Config) (string, error) {
 	app, err := mastodon.RegisterApp(context.Background(), &mastodon.AppConfig{
 		Server:     config.Value("instance").(string),
-		ClientName: "statootstics",
+		ClientName: "mastotool",
 		Scopes:     "read",
 		Website:    "",
 	})
