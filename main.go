@@ -3,27 +3,25 @@ package main
 import (
 	"bufio"
 	"context"
-	"flag"
 	"fmt"
-	"math"
 	"os"
-	"strings"
-	"time"
 
 	mastodon "github.com/mattn/go-mastodon"
-	"github.com/muesli/goprogressbar"
+	"github.com/spf13/cobra"
 )
 
 var (
-	client *mastodon.Client
-	self   *mastodon.Account
+	client     *mastodon.Client
+	self       *mastodon.Account
+	configFile string
 
-	topN       = flag.Int("top", 10, "shows the top N items in each category")
-	maxToots   = flag.Int("recent", 0, "only account for the N most recent toots (excl replies & boosts)")
-	columns    = flag.Int("columns", 80, "displays tables with N columns")
-	configFile = flag.String("config", "mastodon.json", "uses the specified config file")
-	search     = flag.String("search", "", "searches toots containing string")
-	// user     = flag.String("user", "@fribbledom@mastodon.social", "shows stats for this user")
+	// RootCmd is the core command used for cli-arg parsing
+	RootCmd = &cobra.Command{
+		Use:           "mastotool",
+		Short:         "mastotool offers a collection of tools to work with your Mastodon account",
+		SilenceErrors: true,
+		SilenceUsage:  true,
+	}
 )
 
 func registerApp(config *Config) (string, error) {
@@ -47,7 +45,7 @@ func registerApp(config *Config) (string, error) {
 func initClient() error {
 	var err error
 	var instance, token, redirectURI, authURI, id, secret string
-	config, err := LoadConfig(*configFile)
+	config, err := LoadConfig(configFile)
 	if err == nil {
 		instance = config.Value("instance").(string)
 		id = config.Value("id").(string)
@@ -100,7 +98,7 @@ func initClient() error {
 		}
 
 		config.Set("token", mConfig.AccessToken)
-		err = config.Save(*configFile)
+		err = config.Save(configFile)
 		if err != nil {
 			return fmt.Errorf("Can't save config: %s", err)
 		}
@@ -109,144 +107,22 @@ func initClient() error {
 	return nil
 }
 
-func searchToots() error {
-	pb := &goprogressbar.ProgressBar{
-		Text:  fmt.Sprintf("Searching toots for %s", *search),
-		Total: self.StatusesCount,
-		PrependTextFunc: func(p *goprogressbar.ProgressBar) string {
-			return fmt.Sprintf("%d of %d", p.Current, int64(math.Max(float64(p.Current), float64(self.StatusesCount))))
-		},
-		Current: 0,
-		Width:   40,
-	}
-
-	var pg mastodon.Pagination
-	for {
-		pg.SinceID = ""
-		pg.MinID = ""
-		pg.Limit = 40
-		statuses, err := client.GetAccountStatuses(context.Background(), self.ID, &pg)
-		if err != nil {
-			return fmt.Errorf("Can't retrieve statuses: %s", err)
-		}
-
-		abort := false
-		for _, s := range statuses {
-			if strings.Contains(strings.ToLower(cleanupContent(s.Content)), *search) {
-				fmt.Println("\nFound toot:", cleanupContent(s.Content))
-				fmt.Println()
-			}
-
-			pb.Current += 1
-			pb.LazyPrint()
-		}
-
-		// For some reason, either because it's Pleroma or because I have too few toots,
-		// `pg.MaxID` never equals `""` and we get stuck looping forever. Add a simple
-		// break condition on "no statuses fetched" to avoid the issue.
-		if abort || pg.MaxID == "" || len(statuses) == 0 {
-			break
-		}
-	}
-
-	return nil
-}
-
-func gatherStats() error {
-	stats := &stats{
-		DaysActive: int(time.Since(self.CreatedAt).Hours() / 24),
-		Followers:  self.FollowersCount,
-		Following:  self.FollowingCount,
-		Toots:      make(map[string]*tootStat),
-		Tags:       make(map[string]*tootStat),
-		Replies:    make(map[string]*tootStat),
-		Mentions:   make(map[string]int64),
-		Boosts:     make(map[string]int64),
-		Responses:  make(map[string]int64),
-	}
-	pb := &goprogressbar.ProgressBar{
-		Text:  fmt.Sprintf("Loading toots for %s", self.Username),
-		Total: self.StatusesCount,
-		PrependTextFunc: func(p *goprogressbar.ProgressBar) string {
-			return fmt.Sprintf("%d of %d", p.Current, int64(math.Max(float64(p.Current), float64(self.StatusesCount))))
-		},
-		Current: 0,
-		Width:   40,
-	}
-
-	var pg mastodon.Pagination
-	for {
-		pg.SinceID = ""
-		pg.MinID = ""
-		pg.Limit = 40
-		statuses, err := client.GetAccountStatuses(context.Background(), self.ID, &pg)
-		if err != nil {
-			return fmt.Errorf("Can't retrieve statuses: %s", err)
-		}
-
-		abort := false
-		for _, s := range statuses {
-			err = parseToot(s, stats)
-			if err != nil {
-				return fmt.Errorf("Can't parse toot: %s", err)
-			}
-
-			pb.Current += 1
-			pb.LazyPrint()
-
-			if *maxToots > 0 && len(stats.Toots) >= *maxToots {
-				abort = true
-				break
-			}
-		}
-
-		// For some reason, either because it's Pleroma or because I have too few toots,
-		// `pg.MaxID` never equals `""` and we get stuck looping forever. Add a simple
-		// break condition on "no statuses fetched" to avoid the issue.
-		if abort || pg.MaxID == "" || len(statuses) == 0 {
-			break
-		}
-	}
-
-	// print out stats we gathered
-	fmt.Printf("\n\n")
-	printAccountStats(stats)
-	printInteractionStats(stats)
-	printTootStats(stats)
-	printTagStats(stats)
-
-	return nil
-}
-
 func main() {
-	flag.Parse()
-	*search = strings.ToLower(*search)
+	RootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", "mastodon.json", "uses the specified config file")
+
 	if err := initClient(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
 	var err error
 	self, err = client.GetAccountCurrentUser(context.Background())
 	if err != nil {
 		fmt.Printf("Can't retrieve user: %s\n", err)
 		os.Exit(1)
 	}
-	/*
-		accounts, err := client.AccountsSearch(context.Background(), *user, 1)
-		if err != nil {
-			panic(err)
-		}
-		self = accounts[0]
-	*/
 
-	if len(*search) > 0 {
-		err = searchToots()
-	} else {
-		err = gatherStats()
-	}
-	if err != nil {
+	if err := RootCmd.Execute(); err != nil {
 		fmt.Println(err)
-		os.Exit(1)
+		os.Exit(-1)
 	}
 }

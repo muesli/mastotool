@@ -4,16 +4,32 @@ import (
 	"context"
 	"fmt"
 	"html"
+	"math"
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	mastodon "github.com/mattn/go-mastodon"
 	"github.com/microcosm-cc/bluemonday"
+	"github.com/muesli/goprogressbar"
 	"github.com/muesli/gotable"
+	"github.com/spf13/cobra"
 )
 
 var (
+	topN     int
+	maxToots int
+	columns  int
+
+	statsCmd = &cobra.Command{
+		Use:   "stats",
+		Short: "generates statistics about your account",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return gatherStats()
+		},
+	}
+
 	stripper = bluemonday.StrictPolicy()
 )
 
@@ -40,6 +56,72 @@ type stats struct {
 	Mentions   map[string]int64
 	Boosts     map[string]int64
 	Responses  map[string]int64
+}
+
+func gatherStats() error {
+	stats := &stats{
+		DaysActive: int(time.Since(self.CreatedAt).Hours() / 24),
+		Followers:  self.FollowersCount,
+		Following:  self.FollowingCount,
+		Toots:      make(map[string]*tootStat),
+		Tags:       make(map[string]*tootStat),
+		Replies:    make(map[string]*tootStat),
+		Mentions:   make(map[string]int64),
+		Boosts:     make(map[string]int64),
+		Responses:  make(map[string]int64),
+	}
+	pb := &goprogressbar.ProgressBar{
+		Text:  fmt.Sprintf("Loading toots for %s", self.Username),
+		Total: self.StatusesCount,
+		PrependTextFunc: func(p *goprogressbar.ProgressBar) string {
+			return fmt.Sprintf("%d of %d", p.Current, int64(math.Max(float64(p.Current), float64(self.StatusesCount))))
+		},
+		Current: 0,
+		Width:   40,
+	}
+
+	var pg mastodon.Pagination
+	for {
+		pg.SinceID = ""
+		pg.MinID = ""
+		pg.Limit = 40
+		statuses, err := client.GetAccountStatuses(context.Background(), self.ID, &pg)
+		if err != nil {
+			return fmt.Errorf("Can't retrieve statuses: %s", err)
+		}
+
+		abort := false
+		for _, s := range statuses {
+			err = parseToot(s, stats)
+			if err != nil {
+				return fmt.Errorf("Can't parse toot: %s", err)
+			}
+
+			pb.Current += 1
+			pb.LazyPrint()
+
+			if maxToots > 0 && len(stats.Toots) >= maxToots {
+				abort = true
+				break
+			}
+		}
+
+		// For some reason, either because it's Pleroma or because I have too few toots,
+		// `pg.MaxID` never equals `""` and we get stuck looping forever. Add a simple
+		// break condition on "no statuses fetched" to avoid the issue.
+		if abort || pg.MaxID == "" || len(statuses) == 0 {
+			break
+		}
+	}
+
+	// print out stats we gathered
+	fmt.Printf("\n\n")
+	printAccountStats(stats)
+	printInteractionStats(stats)
+	printTootStats(stats)
+	printTagStats(stats)
+
+	return nil
 }
 
 func cleanupContent(content string) string {
@@ -164,14 +246,14 @@ func printTable(cols []string, emptyText string, data []kv) {
 		return data[i].Value > data[j].Value
 	})
 
-	col1 := *columns - len(cols[1])
+	col1 := columns - len(cols[1])
 	col2 := len(cols[1])
 	tab := gotable.NewTable(cols,
 		[]int64{-int64(col1), int64(col2)},
 		emptyText)
 
 	for i, kv := range data {
-		if i >= *topN {
+		if i >= topN {
 			break
 		}
 		if len(kv.Key) > col1-4 {
@@ -319,4 +401,13 @@ func printTagStats(stats *stats) {
 	printTootTable([]string{"Tags used that got the most boosts", "Boosts"},
 		"No toots found.",
 		tags, tagStats, SortByBoosts)
+}
+
+func init() {
+	statsCmd.Flags().IntVarP(&topN, "top", "t", 10, "shows the top N items in each category")
+	statsCmd.Flags().IntVarP(&maxToots, "recent", "r", 0, "only account for the N most recent toots (excl replies & boosts)")
+	statsCmd.Flags().IntVarP(&columns, "columns", "", 80, "displays tables with N columns")
+	// user     = flag.String("user", "@fribbledom@mastodon.social", "shows stats for this user")
+
+	RootCmd.AddCommand(statsCmd)
 }

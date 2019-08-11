@@ -15,22 +15,45 @@ To install mastotool, simply run:
 ## Usage
 
 ```
-$ mastotool -help
-Usage of ./mastotool:
-  -columns int
-        displays tables with N columns (default 80)
-  -config string
-        uses the specified config file (default "mastodon.json")
-  -recent int
-        only account for the N most recent toots (excl replies & boosts)
-  -top int
-        shows the top N items in each category (default 10)
+Usage:
+  mastotool [command]
+
+Available Commands:
+  help        Help about any command
+  search      searches your toots
+  stats       generates statistics about your account
+
+Flags:
+  -c, --config string   uses the specified config file (default "mastodon.json")
+  -h, --help   help for mastotool
+
+Use "mastotool [command] --help" for more information about a command.
+```
+
+### Generate Statistics
+
+```
+Usage:
+  mastotool stats [flags]
+
+Flags:
+      --columns int   displays tables with N columns (default 80)
+  -h, --help          help for stats
+  -r, --recent int    only account for the N most recent toots (excl replies & boosts)
+  -t, --top int       shows the top N items in each category (default 10)
+```
+
+### Search
+
+```
+Usage:
+  mastotool search <string>
 ```
 
 ## Example
 
 ```
-$ mastotool
+$ mastotool stats
 Which instance to connect to: https://mastodon.social
 Username (email): some_user@domain.tld
 Password: ********
