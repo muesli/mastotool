@@ -38,7 +38,6 @@ Usage:
 
 Flags:
       --columns int   displays tables with N columns (default 80)
-  -h, --help          help for stats
   -r, --recent int    only account for the N most recent toots (excl replies & boosts)
   -t, --top int       shows the top N items in each category (default 10)
 ```
