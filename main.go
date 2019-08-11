@@ -122,6 +122,8 @@ func searchToots() error {
 
 	var pg mastodon.Pagination
 	for {
+		pg.SinceID = ""
+		pg.MinID = ""
 		pg.Limit = 40
 		statuses, err := client.GetAccountStatuses(context.Background(), self.ID, &pg)
 		if err != nil {
@@ -174,6 +176,8 @@ func gatherStats() error {
 
 	var pg mastodon.Pagination
 	for {
+		pg.SinceID = ""
+		pg.MinID = ""
 		pg.Limit = 40
 		statuses, err := client.GetAccountStatuses(context.Background(), self.ID, &pg)
 		if err != nil {
