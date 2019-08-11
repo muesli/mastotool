@@ -1,16 +1,19 @@
 mastotool
 =========
 
-Mastodon Statistics Generator
+mastotool offers a collection of tools to work with your Mastodon account
 
 ## Installation
 
 Make sure you have a working Go environment (Go 1.8 or higher is required).
 See the [install instructions](http://golang.org/doc/install.html).
 
-To install mastotool, simply run:
+### From source
 
-    go get github.com/muesli/mastotool
+    git clone https://github.com/muesli/mastotool.git
+    go build
+
+Run `mastotool --help` to see a full list of options.
 
 ## Usage
 
