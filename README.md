@@ -5,15 +5,20 @@ mastotool offers a collection of tools to work with your Mastodon account
 
 ## Installation
 
-Make sure you have a working Go environment (Go 1.8 or higher is required).
-See the [install instructions](http://golang.org/doc/install.html).
+### Packages & Binaries
+
+- Arch Linux: [mastotool](https://aur.archlinux.org/packages/mastotool/)
+- [Binaries](https://github.com/muesli/mastotool/releases) for Linux, macOS & Windows
 
 ### From source
 
+Make sure you have a working Go environment (Go 1.8 or higher is required).
+See the [install instructions](http://golang.org/doc/install.html).
+
+Compiling mastotool is easy, simply run:
+
     git clone https://github.com/muesli/mastotool.git
     go build
-
-Run `mastotool --help` to see a full list of options.
 
 ## Usage
 
