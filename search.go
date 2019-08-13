@@ -49,6 +49,7 @@ func search(token string) error {
 		for _, s := range statuses {
 			if strings.Contains(strings.ToLower(cleanupContent(s.Content)), token) {
 				fmt.Println("\nFound toot:", cleanupContent(s.Content))
+				fmt.Println("Date: ", s.CreatedAt, ", URL: ", s.URL)
 				fmt.Println()
 			}
 
