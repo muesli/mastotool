@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"strings"
+	"time"
 
 	mastodon "github.com/mattn/go-mastodon"
 	"github.com/muesli/goprogressbar"
@@ -49,6 +50,8 @@ func search(token string) error {
 		for _, s := range statuses {
 			if strings.Contains(strings.ToLower(cleanupContent(s.Content)), token) {
 				fmt.Println("\nFound toot:", cleanupContent(s.Content))
+				fmt.Println("Date:", s.CreatedAt.Format(time.RFC822))
+				fmt.Println("URL:", s.URL)
 				fmt.Println()
 			}
 
