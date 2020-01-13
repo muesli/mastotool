@@ -58,12 +58,12 @@ mastotool search <string>
 ## Example
 
 ```
-$ mastotool stats
+$ mastotool stats -r 100
 Which instance to connect to: https://mastodon.social
 Username (email): some_user@domain.tld
 Password: ********
 
-Loading toots for some_user     100 of 100 [#>---------------------------] 100.00%
+Loading toots for some_user     100 of 100 [############################>] 100.00%
 
 Total toots: 100 (excluding replies & boosts)
 Toots per day: 1.00 (account created 100 days ago)
