@@ -24,8 +24,8 @@ builds:
       - goos: linux
         goarch: arm
         goarm: 7
-sign:
-  artifacts: checksum
+signs:
+  - artifacts: checksum
 archives:
   -
     replacements:
