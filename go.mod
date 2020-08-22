@@ -1,5 +1,7 @@
 module github.com/muesli/mastotool
 
+go 1.15
+
 require (
 	github.com/mattn/go-mastodon v0.0.5-0.20190808074743-8a48862adc29
 	github.com/microcosm-cc/bluemonday v1.0.1
