@@ -44,7 +44,7 @@ func (c Config) Value(name string) interface{} {
 	return nil
 }
 
-func (c *Config) Set(name, value string) interface{} {
+func (c *Config) Set(name, value string) {
 	found := false
 	var opts []Option
 	for _, v := range c.Options {
@@ -61,5 +61,4 @@ func (c *Config) Set(name, value string) interface{} {
 	}
 
 	c.Options = opts
-	return nil
 }
