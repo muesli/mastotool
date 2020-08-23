@@ -273,6 +273,10 @@ func printTable(cols []string, emptyText string, data []kv) {
 		tab.AppendRow([]interface{}{kv.Key, kv.Value})
 		tab.AppendSeparator()
 	}
+	if len(data) == 0 {
+		tab.AppendRow(table.Row{emptyText})
+	}
+
 	tab.Render()
 	fmt.Println()
 }
