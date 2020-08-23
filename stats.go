@@ -5,15 +5,15 @@ import (
 	"fmt"
 	"html"
 	"math"
+	"os"
 	"sort"
-	"strconv"
 	"strings"
 	"time"
 
+	"github.com/jedib0t/go-pretty/v6/table"
 	mastodon "github.com/mattn/go-mastodon"
 	"github.com/microcosm-cc/bluemonday"
 	"github.com/muesli/goprogressbar"
-	"github.com/muesli/gotable"
 	"github.com/spf13/cobra"
 )
 
@@ -246,23 +246,34 @@ func printTable(cols []string, emptyText string, data []kv) {
 		return data[i].Value > data[j].Value
 	})
 
-	col1 := columns - len(cols[1])
-	col2 := len(cols[1])
-	tab := gotable.NewTable(cols,
-		[]int64{-int64(col1), int64(col2)},
-		emptyText)
+	col1 := columns - len(cols[1]) - 8
+	// col2 := len(cols[1])
+
+	tab := table.NewWriter()
+	tab.SetOutputMirror(os.Stdout)
+	tab.SetStyle(table.StyleLight)
+	tab.SetAllowedRowLength(columns)
+	tab.AppendHeader(table.Row{cols[0], cols[1]})
+
+	tab.SetColumnConfigs([]table.ColumnConfig{
+		{Name: cols[0], WidthMax: col1},
+		{Name: cols[1]},
+	})
 
 	for i, kv := range data {
 		if i >= topN {
 			break
 		}
-		if len(kv.Key) > col1-4 {
-			kv.Key = kv.Key[:col1-4] + "..."
-		}
+		/*
+			if runewidth.StringWidth(kv.Key) > col1-4 {
+				kv.Key = kv.Key[:col1-4] + "..."
+			}
+		*/
 
-		tab.AppendRow([]interface{}{kv.Key, strconv.FormatInt(int64(kv.Value), 10)})
+		tab.AppendRow([]interface{}{kv.Key, kv.Value})
+		tab.AppendSeparator()
 	}
-	tab.Print()
+	tab.Render()
 	fmt.Println()
 }
 
