@@ -77,7 +77,7 @@ func gatherStats() error {
 			return fmt.Sprintf("%d of %d", p.Current, int64(math.Max(float64(p.Current), float64(self.StatusesCount))))
 		},
 		Current: 0,
-		Width:   40,
+		Width:   progressBarWidth,
 	}
 
 	var pg mastodon.Pagination

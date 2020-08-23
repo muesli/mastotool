@@ -24,6 +24,10 @@ var (
 	}
 )
 
+const (
+	progressBarWidth = 40
+)
+
 func registerApp(config *Config) (string, error) {
 	app, err := mastodon.RegisterApp(context.Background(), &mastodon.AppConfig{
 		Server:     config.Value("instance").(string),
