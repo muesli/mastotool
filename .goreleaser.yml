@@ -2,14 +2,15 @@ env:
   - GO111MODULE=on
 before:
   hooks:
-  - go mod download
+    - go mod download
 builds:
-  -
+  - id: "mastotool"
     binary: mastotool
     ldflags: -s -w -X main.Version={{ .Version }} -X main.CommitSHA={{ .Commit }}
     goos:
       - linux
-      - darwin
+      - freebsd
+      - windows
     goarch:
       - amd64
       - arm64
@@ -18,29 +19,69 @@ builds:
     goarm:
       - 6
       - 7
-    ignore:
-      - goos: darwin
-        goarch: 386
-      - goos: linux
-        goarch: arm
-        goarm: 7
-signs:
-  - artifacts: checksum
+  - id: "darwin"
+    binary: "mastotool"
+    ldflags: -s -w -X main.Version={{ .Version }} -X main.CommitSHA={{ .Commit }}
+    goos:
+      - darwin
+    goarch:
+      - amd64
+
 archives:
-  -
+  - id: default
+    builds:
+      - mastotool
+    format_overrides:
+      - goos: windows
+        format: zip
     replacements:
-      darwin: Darwin
-      linux: Linux
       windows: Windows
       386: i386
       amd64: x86_64
+  - id: darwin
+    builds:
+      - darwin
+    replacements:
+      darwin: Darwin
+      amd64: x86_64
+
+nfpms:
+  - builds:
+      - mastotool
+
+    vendor: muesli
+    homepage: "https://fribbledom.com/"
+    maintainer: "Christian Muehlhaeuser <muesli@gmail.com>"
+    description: "Mastodon CLI tool & statistics generator"
+    license: MIT
+    formats:
+      - deb
+      - rpm
+    bindir: /usr/bin
+
+brews:
+  - ids:
+      - darwin
+    tap:
+      owner: muesli
+      name: homebrew-tap
+    commit_author:
+      name: "Christian Muehlhaeuser"
+      email: "muesli@gmail.com"
+    homepage: "https://fribbledom.com/"
+    description: "Mastodon CLI tool & statistics generator"
+    # skip_upload: true
+
+signs:
+  - artifacts: checksum
+
 checksum:
-  name_template: 'checksums.txt'
+  name_template: "checksums.txt"
 snapshot:
   name_template: "{{ .Tag }}-next"
 changelog:
   sort: asc
   filters:
     exclude:
-    - '^docs:'
-    - '^test:'
+      - "^docs:"
+      - "^test:"
