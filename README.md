@@ -1,6 +1,11 @@
 mastotool
 =========
 
+[![Latest Release](https://img.shields.io/github/release/muesli/mastotool.svg)](https://github.com/muesli/mastotool/releases)
+[![Build Status](https://github.com/muesli/mastotool/workflows/build/badge.svg)](https://github.com/muesli/mastotool/actions)
+[![Go ReportCard](http://goreportcard.com/badge/muesli/mastotool)](http://goreportcard.com/report/muesli/mastotool)
+[![GoDoc](https://godoc.org/github.com/golang/gddo?status.svg)](https://pkg.go.dev/github.com/muesli/mastotool)
+
 mastotool offers a collection of tools to work with your Mastodon account
 
 ## Installation
@@ -119,9 +124,3 @@ Tags used that got the most boosts                                          Boos
 Some tag                                                                         5
 Another tag                                                                      1
 ```
-
-## Development
-
-[![GoDoc](https://godoc.org/github.com/golang/gddo?status.svg)](https://godoc.org/github.com/muesli/mastotool)
-[![Build Status](https://travis-ci.org/muesli/mastotool.svg?branch=master)](https://travis-ci.org/muesli/mastotool)
-[![Go ReportCard](http://goreportcard.com/badge/muesli/mastotool)](http://goreportcard.com/report/muesli/mastotool)
