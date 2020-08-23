@@ -15,7 +15,7 @@ var (
 	self       *mastodon.Account
 	configFile string
 
-	// RootCmd is the core command used for cli-arg parsing
+	// RootCmd is the core command used for cli-arg parsing.
 	RootCmd = &cobra.Command{
 		Use:           "mastotool",
 		Short:         "mastotool offers a collection of tools to work with your Mastodon account",
