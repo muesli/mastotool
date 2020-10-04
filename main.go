@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strings"
 
 	mastodon "github.com/mattn/go-mastodon"
 	"github.com/spf13/cobra"
@@ -65,7 +66,12 @@ func initClient() error {
 		if scanner.Err() != nil {
 			return fmt.Errorf("Can't open input: %s", err)
 		}
+
 		instance = scanner.Text()
+		if !strings.HasPrefix(instance, "http") {
+			instance = "https://" + instance
+		}
+
 		config.Set("instance", instance)
 	}
 
