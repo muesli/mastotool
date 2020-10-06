@@ -22,6 +22,19 @@ var (
 		Short:         "mastotool offers a collection of tools to work with your Mastodon account",
 		SilenceErrors: true,
 		SilenceUsage:  true,
+		PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := initClient(); err != nil {
+				return err
+			}
+
+			var err error
+			self, err = client.GetAccountCurrentUser(context.Background())
+			if err != nil {
+				return fmt.Errorf("Can't retrieve user: %s", err)
+			}
+
+			return nil
+		},
 	}
 )
 
@@ -120,19 +133,8 @@ func initClient() error {
 func main() {
 	RootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", "mastodon.json", "uses the specified config file")
 
-	if err := initClient(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	var err error
-	self, err = client.GetAccountCurrentUser(context.Background())
-	if err != nil {
-		fmt.Printf("Can't retrieve user: %s\n", err)
-		os.Exit(1)
-	}
-
 	if err := RootCmd.Execute(); err != nil {
 		fmt.Println(err)
-		os.Exit(-1)
+		os.Exit(1)
 	}
 }
