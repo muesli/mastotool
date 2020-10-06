@@ -6,14 +6,21 @@ mastotool
 [![Go ReportCard](http://goreportcard.com/badge/muesli/mastotool)](http://goreportcard.com/report/muesli/mastotool)
 [![GoDoc](https://godoc.org/github.com/golang/gddo?status.svg)](https://pkg.go.dev/github.com/muesli/mastotool)
 
-mastotool offers a collection of tools to work with your Mastodon account
+mastotool offers a collection of command-line tools to work with your Mastodon account
 
 ## Installation
 
-### Packages & Binaries
+### Packages
 
+#### Linux
 - Arch Linux: [mastotool](https://aur.archlinux.org/packages/mastotool/)
-- [Binaries](https://github.com/muesli/mastotool/releases) for Linux, macOS & Windows
+- [Packages](https://github.com/muesli/mastotool/releases) in Debian & RPM formats
+
+#### macOS
+- macOS with [Homebrew](https://brew.sh/): `brew tap muesli/tap && brew install mastotool`
+
+### Binaries
+- [Binaries](https://github.com/muesli/mastotool/releases) for Linux, FreeBSD, OpenBSD, macOS & Windows
 
 ### From source
 
