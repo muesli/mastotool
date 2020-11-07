@@ -5,6 +5,8 @@ before:
     - go mod download
 builds:
   - id: "mastotool"
+    env:
+      - CGO_ENABLED=0
     binary: mastotool
     ldflags: -s -w -X main.Version={{ .Version }} -X main.CommitSHA={{ .Commit }}
     goos:
