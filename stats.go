@@ -33,6 +33,7 @@ var (
 	stripper = bluemonday.StrictPolicy()
 )
 
+// Sort options.
 const (
 	SortByLikes = iota
 	SortByBoosts
@@ -97,7 +98,7 @@ func gatherStats() error {
 				return fmt.Errorf("Can't parse toot: %s", err)
 			}
 
-			pb.Current += 1
+			pb.Current++
 			pb.LazyPrint()
 
 			if maxToots > 0 && len(stats.Toots) >= maxToots {
@@ -205,22 +206,22 @@ func parseToot(status *mastodon.Status, stats *stats) error {
 	return nil
 }
 
-type StatSorter struct {
+type statSorter struct {
 	SortKey int
 	Key     []string
 	Stats   []*tootStat
 }
 
-func (a StatSorter) Len() int {
+func (a statSorter) Len() int {
 	return len(a.Stats)
 }
 
-func (a StatSorter) Swap(i, j int) {
+func (a statSorter) Swap(i, j int) {
 	a.Key[i], a.Key[j] = a.Key[j], a.Key[i]
 	a.Stats[i], a.Stats[j] = a.Stats[j], a.Stats[i]
 }
 
-func (a StatSorter) Less(i, j int) bool {
+func (a statSorter) Less(i, j int) bool {
 	switch a.SortKey {
 	case SortByReplies:
 		return a.Stats[i].Replies < a.Stats[j].Replies
@@ -281,8 +282,9 @@ func printTable(cols []string, emptyText string, data []kv) {
 	fmt.Println()
 }
 
+//nolint:unparam
 func printTootTable(cols []string, emptyText string, toots []string, tootStats []*tootStat, sortKey int) {
-	sort.Sort(sort.Reverse(StatSorter{sortKey, toots, tootStats}))
+	sort.Sort(sort.Reverse(statSorter{sortKey, toots, tootStats}))
 
 	var ss []kv
 	for k, v := range toots {
