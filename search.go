@@ -55,7 +55,7 @@ func search(token string) error {
 				fmt.Println()
 			}
 
-			pb.Current += 1
+			pb.Current++
 			pb.LazyPrint()
 		}
 

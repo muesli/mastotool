@@ -5,15 +5,18 @@ import (
 	"io/ioutil"
 )
 
+// Option is a single configuration option.
 type Option struct {
 	Name  string
 	Value interface{}
 }
 
+// Config is a configuration file.
 type Config struct {
 	Options []Option
 }
 
+// LoadConfig loads a configuration file.
 func LoadConfig(filename string) (Config, error) {
 	config := Config{}
 
@@ -26,14 +29,16 @@ func LoadConfig(filename string) (Config, error) {
 	return config, err
 }
 
+// Save saves the configuration to a file.
 func (c Config) Save(filename string) error {
 	j, err := json.MarshalIndent(c, "", "  ")
 	if err != nil {
 		return err
 	}
-	return ioutil.WriteFile(filename, j, 0644)
+	return ioutil.WriteFile(filename, j, 0600)
 }
 
+// Value returns the value of a configuration option.
 func (c Config) Value(name string) interface{} {
 	for _, v := range c.Options {
 		if v.Name == name {
@@ -44,6 +49,7 @@ func (c Config) Value(name string) interface{} {
 	return nil
 }
 
+// Set sets the value of a configuration option.
 func (c *Config) Set(name, value string) {
 	found := false
 	var opts []Option
