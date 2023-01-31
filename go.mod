@@ -3,7 +3,7 @@ module github.com/muesli/mastotool
 go 1.15
 
 require (
-	github.com/jedib0t/go-pretty/v6 v6.4.3
+	github.com/jedib0t/go-pretty/v6 v6.4.4
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/mattn/go-mastodon v0.0.6
 	github.com/microcosm-cc/bluemonday v1.0.22
