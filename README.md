@@ -29,9 +29,7 @@ See the [install instructions](https://golang.org/doc/install.html).
 
 Compiling mastotool is easy, simply run:
 
-    git clone https://github.com/muesli/mastotool.git
-    cd mastotool
-    go build
+    go install github.com/muesli/mastotool@latest
 
 ## Usage
 
